@@ -1,7 +1,7 @@
 modLoader="javafml"
 license="LGPLv3"
 loaderVersion="[1,)"
-issueTrackerURL="https://github.com/Glitchfiend/TerraBlender/issues"
+issueTrackerURL="https://github.com/zublastic-dot/TerraBlender/issues"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/terrablender"
 logoFile="tb_logo.png"
 
@@ -14,10 +14,10 @@ logoFile="tb_logo.png"
 [[mods]]
     modId="terrablender"
     version="${file.jarVersion}"
-    displayName="TerraBlender"
+    displayName="TerraBlender — Zublastic Passive"
     authors="Adubbz"
     credits="Joseph T. McQuigg"
-    description="A library mod for adding biomes in a simple and compatible manner with Minecraft's new biome/terrain system."
+    description="Compatibility-only TerraBlender fork. Automatic biome placement, surface injection and dimension initialization are disabled. Requires an externally authored worldgen replacement."
 
 [[dependencies.terrablender]]
     modId="neoforge"

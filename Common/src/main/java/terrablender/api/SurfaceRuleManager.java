@@ -87,10 +87,14 @@ public class SurfaceRuleManager
      */
     public static SurfaceRules.RuleSource getNamespacedRules(RuleCategory category, SurfaceRules.RuleSource fallback)
     {
-        ImmutableMap.Builder<String, SurfaceRules.RuleSource> builder = ImmutableMap.builder();
-        builder.put("minecraft", getDefaultSurfaceRules(category));
-        builder.putAll(surfaceRules.get(category));
-        return new NamespacedSurfaceRuleSource(fallback, builder.build());
+        // Even direct integrations cannot reactivate namespaced surface dispatch.
+        return fallback;
+    }
+
+    /** Snapshot for offline datapack authoring; registration does not activate these rules. */
+    public static Map<String, SurfaceRules.RuleSource> getRegisteredSurfaceRules(RuleCategory category)
+    {
+        return Map.copyOf(surfaceRules.get(category));
     }
 
     /**

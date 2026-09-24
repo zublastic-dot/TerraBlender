@@ -1,143 +1,52 @@
 plugins {
-    id "net.neoforged.gradle.userdev" version "7.+"
-    id "net.neoforged.gradle.mixin" version "7.+"
-    id "com.matthewprenger.cursegradle" version "1.4.0"
-    id "com.modrinth.minotaur" version "2.+"
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.143'
 }
-
-base.archivesName.set("${mod_name}-neoforge")
-
-minecraft {
-    mappings {
-        channel = official()
-        version.put "minecraft", minecraft_version
-    }
-    accessTransformers.file('src/main/resources/META-INF/accesstransformer.cfg')
+base.archivesName = 'TerraBlender-neoforge-1.21.1-zublastic-passive'
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    withSourcesJar()
 }
-
-runs {
-    configureEach {
-        modSource project.sourceSets.main
+sourceSets {
+    main {
+        java.srcDir('../Common/src/main/java')
+        resources.srcDir('../Common/src/main/resources')
     }
-
-    client {
-        workingDirectory.set(project.file('run'))
-        systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+    test { java.srcDir('../tests/java') }
+}
+neoForge {
+    version = '21.1.248'
+    accessTransformers.from(file('src/main/resources/META-INF/accesstransformer.cfg'))
+    mods { terrablender { sourceSet(sourceSets.main) } }
+    unitTest {
+        enable()
+        testedMod = mods.terrablender
     }
-
-    server {
-        workingDirectory.set(project.file('run'))
-        systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
-        programArgument '--nogui'
+    runs {
+        server { server(); programArgument('--nogui') }
     }
 }
-
 dependencies {
-    implementation "net.neoforged:neoforge:${neoforge_version}"
-    compileOnly project(":Common")
-}
-
-// NeoGradle compiles the game, but we don't want to add our common code to the game's code
-TaskCollection.metaClass.excludingNeoTasks = { ->
-    delegate.matching { !it.name.startsWith("neo") }
-}
-
-tasks.withType(JavaCompile).excludingNeoTasks().configureEach {
-    source(project(":Common").sourceSets.main.allSource)
-}
-
-tasks.withType(Javadoc).excludingNeoTasks().configureEach {
-    source(project(":Common").sourceSets.main.allJava)
-}
-
-tasks.named("sourcesJar", Jar) {
-    from(project(":Common").sourceSets.main.allSource)
-}
-
-tasks.withType(ProcessResources).excludingNeoTasks().configureEach {
-    from project(":Common").sourceSets.main.resources
-    filesMatching("${mod_id}.mixins.json") {
-        expand "refmap_target": "${mod_id}."
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Optional isolated compatibility fixture; never include these jars in the product.
+    if (providers.gradleProperty('compatModsDir').isPresent()) {
+        runtimeOnly fileTree(dir: providers.gradleProperty('compatModsDir').get(), include: ['*.jar'])
     }
 }
-
-curseforge {
-    apiKey = project.findProperty('curseApiKey') ?: 'unset'
-    project {
-        id = '940057'
-
-        if (changelog_file.exists()) {
-            changelog = changelog_file
-        }
-
-        releaseType = release_channel
-        addGameVersion minecraft_version
-        addGameVersion 'NeoForge' // NeoForge isn't auto-detected and must be manually specified
-
-        mainArtifact(jar) {
-            displayName = "TerraBlender NeoForge ${version}"
-        }
-    }
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8'; options.release = 21 }
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    maxHeapSize = '512m'
+    systemProperty 'expectedCompatModIds', providers.gradleProperty('expectedCompatModIds').getOrElse('')
+    systemProperty 'expectModernFixSurface', providers.gradleProperty('expectModernFixSurface').getOrElse('false')
 }
-
-modrinth {
-    token = project.findProperty('modrinthToken')
-    projectId = "terrablender"
-    versionNumber = mod_version
-    versionName = mod_version + " for NeoForge " + minecraft_version
-    versionType = release_channel // can be release, beta, or alpha
-    uploadFile = jar
-    gameVersions = [minecraft_version]
-    loaders = ['neoforge']
-
-    if (changelog_file.exists()) {
-        changelog = trimChangelog(changelog_file.text)
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-            groupId project.group
-            artifactId project.archivesBaseName
-            version project.version
-
-            pom {
-                name = 'TerraBlender-neoforge'
-                description = "A library mod for adding biomes in a simple and compatible manner with Minecraft's new biome/terrain system."
-                url = 'https://github.com/Glitchfiend/TerraBlender'
-                scm {
-                    url = 'https://github.com/Glitchfiend/TerraBlender'
-                    connection = 'scm:git:git://github.com/Glitchfiend/TerraBlender.git'
-                    developerConnection = 'scm:git:git@github.com:Glitchfiend/TerraBlender.git'
-                }
-                issueManagement {
-                    system = 'github'
-                    url = 'https://github.com/Glitchfiend/TerraBlender/issues'
-                }
-                licenses {
-                    license {
-                        name = 'LGPLv3'
-                        url = 'https://www.gnu.org/licenses/lgpl-3.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'adubbz'
-                        name = 'Adubbz'
-                    }
-                }
-            }
-        }
-    }
-    repositories {
-        maven {
-            url = "https://maven.minecraftforge.net/releases/"
-            credentials {
-                username = System.getenv("MAVEN_USER")
-                password = System.getenv("MAVEN_PASSWORD")
-            }
-        }
-    }
+tasks.withType(Jar).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+    manifest.attributes('Implementation-Version': project.version,
+            'Zublastic-Variant': 'passive',
+            'Upstream-Commit': 'c90344362b5e813c43f38fed19ea82412c1fffc3')
+    from(rootProject.file('LICENSE'))
 }

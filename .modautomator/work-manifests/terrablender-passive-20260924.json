@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "work_id": "terrablender-passive-20260924",
+  "lease_id": "terrablender-passive-20260924",
+  "worker_id": "codex-terrablender-passive-20260924",
+  "repository": "zublastic-dot/TerraBlender",
+  "work_branch": "work/codex-terrablender-passive-20260924/terrablender-passive-20260924",
+  "base_commit": "c90344362b5e813c43f38fed19ea82412c1fffc3",
+  "resources": [
+    "artifact:zublastic-worldgen:ZUBLASTIC_WORLDGEN.md",
+    "desktop:owner-pc:terrablender-passive",
+    "domain:modautomator:worldgen/terrablender-passive",
+    "repo:zublastic-dot/TerraBlender",
+    "repo:zublastic-dot/zublastic-context:history/2026-09-24-terrablender-passive-fork.md",
+    "repo:zublastic-dot/zublastic-context:projects/zublastic-worldgen.md",
+    "repo:zublastic-dot/zublastic-ideas:CHANGELOG.md",
+    "repo:zublastic-dot/zublastic-ideas:README.md",
+    "repo:zublastic-dot/zublastic-ideas:terrablender/README.md"
+  ],
+  "paths": [
+    "AGENTS.md",
+    "README.md",
+    "Common/src/main/java",
+    "Common/src/main/resources",
+    "NeoForge/src/main/java",
+    "NeoForge/src/main/resources",
+    "Common/build.gradle",
+    "NeoForge/build.gradle",
+    "build.gradle",
+    "gradle.properties",
+    "settings.gradle",
+    "tests",
+    "docs",
+    ".github/workflows/verify-passive.yml",
+    ".github/workflows/gradle-publish.yml",
+    ".gitignore"
+  ],
+  "value_case": {
+    "category": "observable_capability",
+    "statement": "Provide a globally passive TerraBlender compatibility library while preserving data registration for separately authored biome layouts and surfaces.",
+    "acceptance": [
+      "Disable automatic biome, surface and dimension hooks with no configurable reactivation path.",
+      "Verify transformed lookup and registration contracts, record exact compatibility fixtures, and preserve limits before real-pack deployment."
+    ]
+  }
+}

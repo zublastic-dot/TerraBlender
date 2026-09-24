@@ -1,23 +1,17 @@
 {
   "required": true,
   "package": "terrablender.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "refmap": "${refmap_target}refmap.json",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
     "MixinBiomeSource",
     "MixinBuiltInRegistries",
-    "MixinChunkGenerator",
     "MixinMultiNoiseBiomeSource",
-    "MixinNoiseBasedChunkGenerator",
     "MixinNoiseGeneratorSettings",
     "MixinParameterList",
-    "MixinPrimaryLevelData",
     "MixinTheEndBiomeSource",
     "MultiNoiseBiomeSourceAccess"
   ],
-  "client": [
-    "MixinWorldOpenFlows"
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
   },

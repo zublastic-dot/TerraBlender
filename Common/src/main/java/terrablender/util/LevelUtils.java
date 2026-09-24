@@ -42,40 +42,16 @@ import terrablender.worldgen.IExtendedTheEndBiomeSource;
 
 import java.util.Map;
 
-public class LevelUtils
-{
-    public static void initializeOnServerStart(MinecraftServer server)
-    {
-        RegistryAccess registryAccess = server.registryAccess();
-        Registry<LevelStem> levelStemRegistry = registryAccess.registryOrThrow(Registries.LEVEL_STEM);
-        long seed = server.getWorldData().worldGenOptions().seed();
-
-        for (Map.Entry<ResourceKey<LevelStem>, LevelStem> entry : levelStemRegistry.entrySet())
-        {
-            LevelStem stem = entry.getValue();
-            initializeBiomes(registryAccess, stem.type(), entry.getKey(), stem.generator(), seed);
-        }
-    }
-
-    public static boolean shouldApplyToChunkGenerator(ChunkGenerator chunkGenerator)
-    {
-        return chunkGenerator instanceof NoiseBasedChunkGenerator && shouldApplyToBiomeSource(chunkGenerator.getBiomeSource());
-    }
-
-    public static boolean shouldApplyToBiomeSource(BiomeSource biomeSource)
-    {
-        return biomeSource instanceof MultiNoiseBiomeSource;
-    }
-
-    public static RegionType getRegionTypeForDimension(Holder<DimensionType> dimensionType)
-    {
-        if (dimensionType.is(DimensionTypeTags.NETHER_REGIONS)) return RegionType.NETHER;
-        else if (dimensionType.is(DimensionTypeTags.OVERWORLD_REGIONS)) return RegionType.OVERWORLD;
-        else return null;
-    }
-
+public class LevelUtils {
+    public static void initializeOnServerStart(MinecraftServer server) {}
+    public static boolean shouldApplyToChunkGenerator(ChunkGenerator generator) { return false; }
+    public static boolean shouldApplyToBiomeSource(BiomeSource source) { return false; }
+    public static RegionType getRegionTypeForDimension(Holder<DimensionType> type) { return null; }
     public static void initializeBiomes(RegistryAccess registryAccess, Holder<DimensionType> dimensionType, ResourceKey<LevelStem> levelResourceKey, ChunkGenerator chunkGenerator, long seed)
     {
+        // Keep upstream injection targets and locals for integrations such as BiomeSpy.
+        // This private, unconditional gate is not configurable. The legacy body never runs.
+        if (passiveRuntime()) return;
         if (!(chunkGenerator instanceof NoiseBasedChunkGenerator noiseBasedChunkGenerator))
             return;
 
@@ -122,4 +98,5 @@ public class LevelUtils
 
         TerraBlender.LOGGER.info(String.format("Initialized TerraBlender biomes for level stem %s", levelResourceKey.location()));
     }
+    private static boolean passiveRuntime() { return true; }
 }

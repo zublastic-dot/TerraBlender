@@ -22,3 +22,5 @@ build
 eclipse
 run
 runs
+# Early JUnit bootstrap may write logs before the modded test directory is selected.
+/NeoForge/logs/
