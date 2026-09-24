@@ -6,6 +6,8 @@ on:
 
 jobs:
   build:
+    # Publishing remains upstream-only; this fork ships reviewed artifacts separately.
+    if: github.repository == 'Glitchfiend/TerraBlender'
     runs-on: ubuntu-latest
     permissions:
       contents: read

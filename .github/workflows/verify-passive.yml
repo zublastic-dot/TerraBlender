@@ -1,0 +1,21 @@
+name: Verify passive NeoForge fork
+on:
+  push:
+    branches: ['1.21.1', 'work/**']
+  pull_request:
+    branches: ['1.21.1']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+      - run: ./gradlew :NeoForge:test :NeoForge:jar :NeoForge:sourcesJar --no-daemon --max-workers=2
